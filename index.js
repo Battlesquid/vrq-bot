@@ -23,21 +23,21 @@ const loadDirectory = dir => {
         .filter(file => file.endsWith(".js"))
         .map(command => command.split(".")[0])
 
-    return validFiles;
+    return { path: directoryPath, files: validFiles };
 }
 
 const loadCommands = dir => {
-    const validCommands = loadDirectory(dir);
-    for (const command of validCommands) {
-        bot.commands.set(command, require(`${directoryPath}/${command}`))
+    const directory = loadDirectory(dir);
+    for (const command of directory.files) {
+        bot.commands.set(command, require(`${directory.path}/${command}`))
     }
 }
 
 const loadEvents = dir => {
-    const validEvents = loadDirectory(dir);
+    const directory = loadDirectory(dir);
 
-    for (const eventName of validEvents) {
-        const eventPath = path.resolve(__dirname, dir, eventName);
+    for (const eventName of directory.files) {
+        const eventPath = `${directory.path}/${eventName}`;
         bot.on(eventName, require(eventPath).bind(null, bot));
         delete require.cache[require.resolve(eventPath)];
     }
