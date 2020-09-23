@@ -1,8 +1,8 @@
 module.exports = async (bot, message) => {
 
     if (message.author.bot) return;
-    if (message.guild.id === undefined) return;
-    if(!message.content.startsWith(process.env.PREFIX)) return;
+    if (!message.guild.available) return;
+    if (!message.content.startsWith(process.env.PREFIX)) return;
 
     const [commandName, ...args] = message.content
         .slice(process.env.PREFIX.length)
