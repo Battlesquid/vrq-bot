@@ -29,7 +29,6 @@ const updateViewOverwrites = async (user, state, accessState) => {
             await channel.updateOverwrite(user, { VIEW_CHANNEL: true })
         }
         updateQueueView(user, state, false);
-
     } else {
         for (const channel of channels.array()) {
             if (channel.permissionOverwrites && channel.permissionOverwrites.get(state.id))
@@ -39,15 +38,22 @@ const updateViewOverwrites = async (user, state, accessState) => {
     }
 }
 
-
 module.exports = async (bot, oldState, newState) => {
+    
+    if (oldState) {
+        if (!parseQueueType(oldState)) return;
+
+        
+        const user = await bot.users.fetch(oldState.id);
+        await updateViewOverwrites(user, oldState, false);
+
+        console.log('left ', oldState.channel.name);
+    }
 
     if (newState) {
         console.log('joined ', newState.channel.name)
         const queueType = parseQueueType(newState);
         if (!queueType) return;
-
-        const user = await bot.users.fetch(newState.id);
 
         if (queueType === "random") {
             if (newState.channel.name !== "Random Queue") return;
@@ -61,15 +67,9 @@ module.exports = async (bot, oldState, newState) => {
             await newState.setChannel(vacantVoiceChannel);
         }
 
+        const user = await bot.users.fetch(newState.id);
         await updateViewOverwrites(user, newState, true);
     }
 
-    if (oldState) {
-        if (!parseQueueType(oldState)) return;
 
-        const user = await bot.users.fetch(oldState.id);
-        await updateViewOverwrites(user, oldState, false);
-
-        console.log('left ', oldState.channel.name);
-    }
 }
