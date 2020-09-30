@@ -11,6 +11,7 @@ module.exports = async (bot, message) => {
 
     const command = bot.commands.get(commandName);
     if (!command) return;
+    if(!command.meetsRequirements(message, args)) return console.log('unmet'); 
     try {
         command.run(message, args);
     } catch (e) { console.log(e); }
