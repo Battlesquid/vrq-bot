@@ -4,9 +4,9 @@ const path = require('path');
 const { Collection, Client } = require('discord.js-light');
 
 const bot = new Client({
-    cacheGuilds: false,
-    cacheChannels: false,
-    cacheOverwrites: false,
+    cacheGuilds: true,
+    cacheChannels: true,
+    cacheOverwrites: true,
     cacheRoles: false,
     cacheEmojis: false,
     cachePresences: false
@@ -49,5 +49,3 @@ bot.on('ready', () => {
 })
 
 bot.login(process.env.TOKEN);
-
-//https://discord.com/api/oauth2/authorize?client_id=758188376947032074&permissions=50334720&scope=bot
