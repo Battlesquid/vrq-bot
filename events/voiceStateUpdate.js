@@ -8,7 +8,6 @@ const parseQueueType = state => {
 const parseMatchNum = matchString => matchString.toLowerCase().replace(/[ -]|red|blue/g, "")
 
 const updateQueueView = (user, state, accessState) => {
-
     const randomQueue = state.channel.parent.children.find(child => child.name === "Random Queue");
     if (!randomQueue) return;
 
@@ -20,11 +19,9 @@ const updateQueueView = (user, state, accessState) => {
     }
 }
 
-
 const updateViewOverwrites = async (user, state, accessState) => {
-
     const matchChannel = state.channel.name.match(/\d+/);
-    if(!matchChannel) return;
+    if (!matchChannel) return;
     const matchNum = matchChannel[0];
 
     const channels = state.channel.parent.children
@@ -35,7 +32,9 @@ const updateViewOverwrites = async (user, state, accessState) => {
             await channel.updateOverwrite(user, { VIEW_CHANNEL: true })
         }
         updateQueueView(user, state, false);
-    } else {
+    }
+
+    else {
         for (const channel of channels.array()) {
             if (channel.permissionOverwrites && channel.permissionOverwrites.get(state.id))
                 channel.permissionOverwrites.get(state.id).delete();
@@ -49,16 +48,14 @@ module.exports = async (bot, oldState, newState) => {
     if (oldState) {
         if (!parseQueueType(oldState)) return;
 
-        if(newState && parseMatchNum(newState.channel.name) === parseMatchNum(oldState.channel.name)) return;
-
+        if (newState && parseMatchNum(newState.channel.name) === parseMatchNum(oldState.channel.name)) return;
         const user = await bot.users.fetch(oldState.id);
-        await updateViewOverwrites(user, oldState, false);
 
-        console.log('left ', oldState.channel.name);
+        await updateViewOverwrites(user, oldState, false);
     }
 
     if (newState) {
-        console.log('joined ', newState.channel.name)
+
         const queueType = parseQueueType(newState);
         if (!queueType) return;
 
@@ -77,6 +74,4 @@ module.exports = async (bot, oldState, newState) => {
         const user = await bot.users.fetch(newState.id);
         await updateViewOverwrites(user, newState, true);
     }
-
-
 }

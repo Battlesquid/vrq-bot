@@ -18,7 +18,7 @@ module.exports.run = (message, [queueType, program, matchType]) => {
     const memberCount = category.children
         .filter(channel => channel.type === "voice")
         .reduce((acc, channel) => acc + channel.members.size, 0)
-    message.reply(memberCount);
+    message.reply(`there are currently ${memberCount} members in the ${queueType} ${program} ${matchType} queue.`);
 }
 
 module.exports.meetsRequirements = (message, args) => {
