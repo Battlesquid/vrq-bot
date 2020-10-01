@@ -5,6 +5,8 @@ const parseQueueType = state => {
         .find(e => /random|casual/.test(e))
 }
 
+const parseMatchNum = matchString => matchString.toLowerCase().replace(/[ -]|red|blue/g, "")
+
 const updateQueueView = (user, state, accessState) => {
 
     const randomQueue = state.channel.parent.children.find(child => child.name === "Random Queue");
@@ -18,11 +20,15 @@ const updateQueueView = (user, state, accessState) => {
     }
 }
 
+
 const updateViewOverwrites = async (user, state, accessState) => {
 
-    const matchNum = state.channel.name.match(/\d+/)[0];
+    const matchChannel = state.channel.name.match(/\d+/);
+    if(!matchChannel) return;
+    const matchNum = matchChannel[0];
+
     const channels = state.channel.parent.children
-        .filter(child => child.name.match(RegExp(`match.${matchNum}$`, "ig")))
+        .filter(child => parseMatchNum(child.name).match(RegExp(`match${matchNum}$`, "ig")))
 
     if (accessState) {
         for (const channel of channels.array()) {
@@ -39,11 +45,12 @@ const updateViewOverwrites = async (user, state, accessState) => {
 }
 
 module.exports = async (bot, oldState, newState) => {
-    
+
     if (oldState) {
         if (!parseQueueType(oldState)) return;
 
-        
+        if(newState && parseMatchNum(newState.channel.name) === parseMatchNum(oldState.channel.name)) return;
+
         const user = await bot.users.fetch(oldState.id);
         await updateViewOverwrites(user, oldState, false);
 
